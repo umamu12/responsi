@@ -1,59 +1,22 @@
-<?php
-session_start();
-include 'dbconnect.php';
-
-if(isset($_SESSION['role'])){
-	header("location:stock");
-}
-
-if(isset($_GET['pesan'])){
-		if($_GET['pesan'] == "gagal"){
-			echo "Username atau Password salah!";
-		}else if($_GET['pesan'] == "logout"){
-			echo "Anda berhasil keluar dari sistem";
-		}else if($_GET['pesan'] == "belum_login"){
-			echo "Anda harus Login";
-		}else if($_GET['pesan'] == "noaccess"){
-			echo "Akses Ditutup";
+<?php 
+	include"inc/config.php";
+	if(!empty($_SESSION['iam_user'])){
+		redir("logged_in.php");
 	}
-}
-
-
-if(isset($_POST['btn-login']))
-{
- $uname = mysqli_real_escape_string($conn,$_POST['username']);
- $upass = mysqli_real_escape_string($conn,md5($_POST['password']));
-
- // menyeleksi data user dengan username dan password yang sesuai
-$login = mysqli_query($conn,"select * from slogin where username='$uname' and password='$upass';");
-// menghitung jumlah data yang ditemukan
-$cek = mysqli_num_rows($login);
- 
-// cek apakah username dan password di temukan pada database
-if($cek > 0){
- 
-	$data = mysqli_fetch_assoc($login);
- 
- if($data['role']=="stock"){
-		// buat session login dan username
-		$_SESSION['user'] = $data['nickname'];
-		$_SESSION['user_login'] = $data['username'];
-		$_SESSION['id'] = $data['id'];
-		$_SESSION['role'] = "stock";
-		header("location:stock");
-
- }
- else
- {
-  header("location:index.php?pesan=gagal");
-
- }
- 
-}
-
-}
-
-
+	 
+	
+	if(!empty($_POST)){
+		extract($_POST);
+		$password = md5($password);
+		$q = mysqli_query($connect, "SELECT * FROM `user` WHERE username='$username' AND password='$password' AND status='user'");
+		if($q){
+			$r = mysqli_fetch_object($q);
+			$_SESSION['iam_user'] = $r->id;
+			redir("logged_in.php");
+		}else{
+			alert("Maaf email dan password anda salah");
+		}
+	}
 ?>
 
 
@@ -110,9 +73,10 @@ h4{font-size:85%;}
                         <input type="password" class="form-control" placeholder="Password" name="password">
                     </div>
                     <button type="submit" class="btn btn-primary" name="btn-login">Masuk</button>
-			
                 </form>
-			
+				<div style="color:white"> 
+					Don't have an account ? <a href="register.php">Create now !</a>
+				</div>
 			<br \>
         </div></div>
        
