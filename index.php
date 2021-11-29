@@ -1,6 +1,6 @@
 <?php 
 	include"inc/config.php";
-	if(!empty($_SESSION['iam_user'])){
+	if(!empty($_SESSION['status'])){
 		redir("logged_in.php");
 	}
 	 
@@ -8,10 +8,12 @@
 	if(!empty($_POST)){
 		extract($_POST);
 		$password = md5($password);
-		$q = mysqli_query($connect, "SELECT * FROM `user` WHERE username='$username' AND password='$password' AND status='user'");
+		$q = mysqli_query($connect, "SELECT * FROM `staff` WHERE username='$username' AND password='$password' AND status='user'");
 		if($q){
+			$data = mysqli_fetch_assoc($q);
 			$r = mysqli_fetch_object($q);
-			$_SESSION['iam_user'] = $r->id;
+			$_SESSION['user_login'] = $data['username'];
+			$_SESSION['status'] = "user";
 			redir("logged_in.php");
 		}else{
 			alert("Maaf email dan password anda salah");

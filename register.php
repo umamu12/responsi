@@ -1,11 +1,10 @@
 <?php
 	include"inc/config.php";
 
-	if(!empty($_SESSION['iam_user'])){
+	if(!empty($_SESSION['user'])){
 		redir("index.php");
 	}
 
-	include"layout/header.php";
 ?>
 
     <?php
@@ -13,7 +12,7 @@
     extract($_POST);
 
     $password = md5($password);
-    $q = mysqli_query($connect, "insert into staff Values('$username','$password','$f_name','$email','$telephone','user')");
+    $q = mysqli_query($connect, "insert into staff Values('$username','$password','$f_name','$email','$phone_num','user')");
         if($q){
     ?>
     <div class="alert alert-success">Register succes.<br>
@@ -54,29 +53,29 @@ h4{font-size:85%;}
   </head>
   <body>
   
-  <div align="center">
-  
 
 	<br \><br \>
-			<div class="container">
+			<div class="container" style="color:white">
+			<h3>Register User</h3>
                 <form action="" method="post" enctype="multipart/form-data">
-						<label>Nama</label><br>
-						<input type="text" class="form-control" name="username" required placeholder="Input username"><br>
-						<label>Password</label><br>
-						<input type="password" class="form-control" name="password" required placeholder="Input Password"><br>
-						<label>Full name</label><br>
-						<input type="text" class="form-control" name="alamat" required placeholder="Masukkan Alamat"><br>
-						<label>Email</label><br>
-						<input type="email" class="form-control" name="email" required placeholder="Masukkan Email"><br>
-						<label>Telephone</label><br>
-						<input type="text" class="form-control" name="telephone" required placeholder="Masukkan Nomor Telp"><br>
+					<div style="color:white">
+					<label>Username</label><br>
+					<input type="text" class="form-control" name="username" required placeholder="Input username"><br>
+					<label>Password</label><br>
+					<input type="password" class="form-control" name="password" required placeholder="Input Password"><br>
+					<label>Full name</label><br>
+					<input type="text" class="form-control" name="f_name" required placeholder="Input Full Name"><br>
+					<label>Email</label><br>
+					<input type="email" class="form-control" name="email" required placeholder="Input Email"><br>
+					<label>Phone number</label><br>
+					<input type="text" class="form-control" name="phone_num" required placeholder="Input Phone Number"><br>
 
-						<input type="submit" name="form-input" value="Register" class="btn btn-success">
-					</form>
+					<input type="submit" name="form-input" value="Register" class="btn btn-success">
+				</form>
 
-				<div style="color:white"> 
-					Already have an account ? <a href="index.php">Login now !</a>
-				</div>
+			<div style="color:white"> 
+				Already have an account ? <a href="index.php">Login now !</a>
+			</div>
 			
 			<br \>
         </div>	

@@ -3,53 +3,6 @@
 
 <?php 
     include 'inc/config.php';
-
-    if(isset($_POST['update'])){
-        $idx = $_POST['idbrg'];
-        $nama = $_POST['nama'];
-        $jenis = $_POST['jenis'];
-        $merk = $_POST['merk'];
-        $ukuran = $_POST['ukuran'];
-        $satuan = $_POST['satuan'];
-        $lokasi = $_POST['lokasi'];
-
-        $updatedata = mysqli_query($conn,"update sstock_brg set nama='$nama', jenis='$jenis', merk='$merk', ukuran='$ukuran', satuan='$satuan', lokasi='$lokasi' where idx='$idx'");
-        
-        //cek apakah berhasil
-        if ($updatedata){
-
-            echo " <div class='alert alert-success'>
-                <strong>Success!</strong> Redirecting you back in 1 seconds.
-              </div>
-            <meta http-equiv='refresh' content='1; url= stock.php'/>  ";
-            } else { echo "<div class='alert alert-warning'>
-                <strong>Failed!</strong> Redirecting you back in 1 seconds.
-              </div>
-             <meta http-equiv='refresh' content='1; url= stock.php'/> ";
-            }
-    };
-
-    if(isset($_POST['hapus'])){
-        $idx = $_POST['idbrg'];
-
-        $delete = mysqli_query($conn,"delete from sstock_brg where idx='$idx'");
-        //hapus juga semua data barang ini di tabel keluar-masuk
-        $deltabelkeluar = mysqli_query($conn,"delete from sbrg_keluar where id='$idx'");
-        $deltabelmasuk = mysqli_query($conn,"delete from sbrg_masuk where id='$idx'");
-        
-        //cek apakah berhasil
-        if ($delete && $deltabelkeluar && $deltabelmasuk){
-
-            echo " <div class='alert alert-success'>
-                <strong>Success!</strong> Redirecting you back in 1 seconds.
-              </div>
-            <meta http-equiv='refresh' content='1; url= stock.php'/>  ";
-            } else { echo "<div class='alert alert-warning'>
-                <strong>Failed!</strong> Redirecting you back in 1 seconds.
-              </div>
-             <meta http-equiv='refresh' content='1; url= stock.php'/> ";
-            }
-    };
 	?>
 
 <head>
@@ -78,14 +31,6 @@
 	</script>
     <!-- amchart css -->
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-	<!-- Start datatable css -->
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
-	
     <!-- others css -->
     <link rel="stylesheet" href="assets/css/typography.css">
     <link rel="stylesheet" href="assets/css/default-css.css">
@@ -115,8 +60,8 @@
                 <div class="menu-inner">
                     <nav>
                         <ul class="metismenu" id="menu">
-							<li><a href="index.php"><span>Notes</span></a></li>
-                            <li class="active">
+							<li class="active"><a href="index.php"><span>Notes</span></a></li>
+                            <li>
                                 <a href="stock.php"><i class="ti-dashboard"></i><span>Stock Barang</span></a>
                             </li>
 							<li>
@@ -207,7 +152,7 @@
                             <h4 class="page-title pull-left">Dashboard</h4>
                             <ul class="breadcrumbs pull-left">
                                 <li><a href="index.php">Home</a></li>
-                                <li><span>Daftar Barang</span></li>
+                                <li><span>Dashboard</span></li>
                             </ul>
                         </div>
                     </div>
@@ -220,136 +165,139 @@
             </div>
             <!-- page title area end -->
             <div class="main-content-inner">
-               
+                <!-- sales report area start 
+                <div class="sales-report-area mt-5 mb-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="single-report mb-xs-30">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-btc"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Bitcoin</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales1" height="100"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-report mb-xs-30">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-btc"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Bitcoin Dash</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales2" height="100"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-report">
+                                <div class="s-report-inner pr--20 pt--30 mb-3">
+                                    <div class="icon"><i class="fa fa-eur"></i></div>
+                                    <div class="s-report-title d-flex justify-content-between">
+                                        <h4 class="header-title mb-0">Euthorium</h4>
+                                        <p>24 H</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between pb-2">
+                                        <h2>$ 4567809,987</h2>
+                                        <span>- 45.87</span>
+                                    </div>
+                                </div>
+                                <canvas id="coin_sales3" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- sales report area end -->
+                <!-- overview area start 
+                <div class="row">
+                    <div class="col-xl-9 col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="header-title mb-0">Overview</h4>
+                                    <select class="custome-select border-0 pr-3">
+                                        <option selected>Last 24 Hours</option>
+                                        <option value="0">01 July 2018</option>
+                                    </select>
+                                </div>
+                                <div id="verview-shart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 coin-distribution">
+                        <div class="card h-full">
+                            <div class="card-body">
+                                <h4 class="header-title mb-0">Coin Distribution</h4>
+                                <div id="coin_distribution"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- overview area end -->
                 <!-- market value area start -->
                 <div class="row mt-5 mb-5">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-sm-flex justify-content-between align-items-center">
-									<h2>Daftar Barang</h2>
-									<button style="margin-bottom:20px" data-toggle="modal" data-target="#myModal" class="btn btn-info col-md-2"><span class="glyphicon glyphicon-plus"></span>Tambah Barang</button>
+									<h2>Notes</h2>
                                 </div>
-                                    <div class="data-tables datatable-dark">
-										 <table id="dataTable3" class="display" style="width:100%"><thead class="thead-dark">
+                                <div class="market-status-table mt-4">
+                                    <div class="table-responsive">
+										 <table class="table table-bordered table-hover"><thead class="thead-dark">  
+										<tr>
+										 <th><center> No </center></th>
+										 <th><center> Catatan </center></th>
+										 <th><center> Ditulis oleh </center></th>
+										 <th><center> Action </center></th>
+
+
+										</tr></thead>
+										 <form method ='POST' action = 'notes.php'>
+										 <tr class="table-active">
+											<td><center><input type = 'hidden'/></center> </td>
+											<td><center> <input type = 'text' class='form-control' name = 'konten' required /></center> </td>
+											<td><center>Saya, <strong><?=$_SESSION['user'];?></strong> <span class="badge badge-secondary"><?=$_SESSION['role'];?></span></center> </td>
+											<td><center><input type = 'submit' name = 'submit'  class='btn btn-primary btn-sm' value = 'Add Note'/></center></td>
 											<tr>
-												<th>No</th>
-												<th>Nama Barang</th>
-												<th>Jenis</th>
-												<th>Merk</th>
-												<th>Ukuran</th>
-												<th>Stock</th>
-												<th>Satuan</th>
-												<th>Lokasi</th>
-												
-												<th>Opsi</th>
-											</tr></thead><tbody>
-											<?php 
-											$brgs=mysqli_query($conn,"SELECT * from sstock_brg order by nama ASC");
-											$no=1;
-											while($p=mysqli_fetch_array($brgs)){
-                                                $idb = $p['idx'];
-												?>
-												
-												<tr>
-													<td><?php echo $no++ ?></td>
-													<td><?php echo $p['nama'] ?></td>
-													<td><?php echo $p['jenis'] ?></td>
-													<td><?php echo $p['merk'] ?></td>
-													<td><?php echo $p['ukuran'] ?></td>
-													<td><?php echo $p['stock'] ?></td>
-													<td><?php echo $p['satuan'] ?></td>
-													<td><?php echo $p['lokasi'] ?></td>
-                                                    <td><button data-toggle="modal" data-target="#edit<?=$idb;?>" class="btn btn-warning">Edit</button> <button data-toggle="modal" data-target="#del<?=$idb;?>" class="btn btn-danger">Del</button></td>
-												</tr>
+										 </form>
+										<?php  
+										// Perintah untuk menampilkan data
+										$queri="Select * From notes where status='aktif' Order by id DESC" ;  //menampikan SEMUA data dari tabel
 
+										$hasil=MySQLi_query ($conn,$queri);    //fungsi untuk SQL
 
-                                                <!-- The Modal -->
-                                                    <div class="modal fade" id="edit<?=$idb;?>">
-                                                        <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                        <form method="post">
-                                                            <!-- Modal Header -->
-                                                            <div class="modal-header">
-                                                            <h4 class="modal-title">Edit Barang <?php echo $p['nama']?> - <?php echo $p['jenis']?> - <?php echo $p['ukuran']?></h4>
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            </div>
-                                                            
-                                                            <!-- Modal body -->
-                                                            <div class="modal-body">
-                                                            
-                                                            <label for="nama">Nama</label>
-                                                            <input type="text" id="nama" name="nama" class="form-control" value="<?php echo $p['nama'] ?>">
+										// nilai awal variabel untuk no urut
+										$i = 1;
 
-                                                            <label for="jenis">Jenis</label>
-                                                            <input type="text" id="jenis" name="jenis" class="form-control" value="<?php echo $p['jenis'] ?>">
-
-                                                            <label for="merk">Merk</label>
-                                                            <input type="text" id="merk" name="merk" class="form-control" value="<?php echo $p['merk'] ?>">
-
-                                                            <label for="ukuran">Ukuran</label>
-                                                            <input type="text" id="ukuran" name="ukuran" class="form-control" value="<?php echo $p['ukuran'] ?>">
-
-                                                            <label for="stock">Stock</label>
-                                                            <input type="text" id="stock" name="stock" class="form-control" value="<?php echo $p['stock'] ?>" disabled>
-
-                                                            <label for="satuan">Satuan</label>
-                                                            <input type="text" id="satuan" name="satuan" class="form-control" value="<?php echo $p['satuan'] ?>">
-
-                                                            <label for="lokasi">Lokasi</label>
-                                                            <input type="text" id="lokasi" name="lokasi" class="form-control" value="<?php echo $p['lokasi'] ?>">
-                                                            <input type="hidden" name="idbrg" value="<?=$idb;?>">
-
-                                                            
-                                                            </div>
-                                                            
-                                                            <!-- Modal footer -->
-                                                            <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-success" name="update">Save</button>
-                                                            </div>
-                                                            </form>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-
-
-
-                                                    <!-- The Modal -->
-                                                    <div class="modal fade" id="del<?=$idb;?>">
-                                                        <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                        <form method="post">
-                                                            <!-- Modal Header -->
-                                                            <div class="modal-header">
-                                                            <h4 class="modal-title">Hapus Barang <?php echo $p['nama']?> - <?php echo $p['jenis']?> - <?php echo $p['ukuran']?></h4>
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            </div>
-                                                            
-                                                            <!-- Modal body -->
-                                                            <div class="modal-body">
-                                                            Apakah Anda yakin ingin menghapus barang ini dari daftar stock?
-                                                            <input type="hidden" name="idbrg" value="<?=$idb;?>">
-                                                            </div>
-                                                            
-                                                            <!-- Modal footer -->
-                                                            <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-success" name="hapus">Hapus</button>
-                                                            </div>
-                                                            </form>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-
-
-												<?php 
-											}
-											?>
-										</tbody>
+										// perintah untuk membaca dan mengambil data dalam bentuk array
+										while ($data = mysqli_fetch_array ($hasil)){
+										$id = $data['id'];
+										 echo "  <form method ='POST' action = 'done.php'>
+										  <tr>
+										  <td><center>".$i."</center></td>
+										  <td><strong><center>".$data['contents']."</center></strong></td>
+										  <td><strong><center>".$data['admin']."</center></strong></td>
+										  <td><center><input type = 'hidden' name = 'id' value = '".$data['id']."'> <input type='submit' name = 'submit'  class='btn btn-danger btn-sm' value = 'Delete' formaction='del.php' /></center></td>
+										  </form></td>
+										  </tr> </form>
+										  ";
+										 $i++; 
+										}
+										?>
 										</table>
                                     </div>
-									<a href="exportstkbhn.php" target="_blank" class="btn btn-info">Export Data</a>
                                 </div>
                             </div>
                         </div>
@@ -370,87 +318,9 @@
         <!-- footer area end-->
     </div>
     <!-- page container area end -->
-	
-	<!-- modal input -->
-			<div id="myModal" class="modal fade">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title">Masukkan stok manual</h4>
-						</div>
-						<div class="modal-body">
-							<form action="tmb_brg_act.php" method="post">
-								<div class="form-group">
-									<label>Nama</label>
-									<input name="nama" type="text" class="form-control" placeholder="Nama Barang" required>
-								</div>
-								<div class="form-group">
-									<label>Jenis</label>
-									<input name="jenis" type="text" class="form-control" placeholder="Jenis / Kategori Barang">
-								</div>
-								<div class="form-group">
-									<label>Merk</label>
-									<input name="merk" type="text" class="form-control" placeholder="Merk Barang">
-								</div>
-								<div class="form-group">
-									<label>Ukuran</label>
-									<input name="ukuran" type="text" class="form-control" placeholder="Ukuran">
-								</div>
-								<div class="form-group">
-									<label>Stock</label>
-									<input name="stock" type="number" min="0" class="form-control" placeholder="Qty">
-								</div>
-								<div class="form-group">
-									<label>Satuan</label>
-									<select name="satuan" class="custom-select form-control">
-									<option selected>Pilih satuan</option>
-									<option value="Buah">Buah</option>
-									<option value="Unit">Unit</option>
-									<option value="Meter">Meter</option>
-									<option value="Milimeter">Centimeter</option>
-									<option value="Milimeter">Milimeter</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label>Lokasi</label>
-									<input name="lokasi" type="text" class="form-control" placeholder="Lokasi barang">
-								</div>
 
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-								<input type="submit" class="btn btn-primary" value="Simpan">
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-	
-	<script>
-		$(document).ready(function() {
-		$('input').on('keydown', function(event) {
-			if (this.selectionStart == 0 && event.keyCode >= 65 && event.keyCode <= 90 && !(event.shiftKey) && !(event.ctrlKey) && !(event.metaKey) && !(event.altKey)) {
-			   var $t = $(this);
-			   event.preventDefault();
-			   var char = String.fromCharCode(event.keyCode);
-			   $t.val(char + $t.val().slice(this.selectionEnd));
-			   this.setSelectionRange(1,1);
-			}
-		});
-	});
-	
-	$(document).ready(function() {
-    $('#dataTable3').DataTable( {
-        dom: 'Bfrtip',
-        buttons: [
-            'print'
-        ]
-    } );
-	} );
-	</script>
-	
-	<!-- jquery latest version -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <!-- jquery latest version -->
+    <script src="assets/js/vendor/jquery-2.2.4.min.js"></script>
     <!-- bootstrap 4 js -->
     <script src="assets/js/popper.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
@@ -458,15 +328,7 @@
     <script src="assets/js/metisMenu.min.js"></script>
     <script src="assets/js/jquery.slimscroll.min.js"></script>
     <script src="assets/js/jquery.slicknav.min.js"></script>
-		<!-- Start datatable js -->
-	 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
-	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+
     <!-- start chart js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <!-- start highcharts js -->
@@ -484,8 +346,6 @@
     <!-- others plugins -->
     <script src="assets/js/plugins.js"></script>
     <script src="assets/js/scripts.js"></script>
-	
-	
 </body>
 
 </html>

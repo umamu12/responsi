@@ -1,5 +1,4 @@
 <?php 
-	session_start();
 	$connect = mysqli_connect("localhost", "root", "");
 	$database = "responsi";
 	mysqli_select_db($connect,$database);
